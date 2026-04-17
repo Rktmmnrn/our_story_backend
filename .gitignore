@@ -3,6 +3,7 @@ __pycache__/
 *$py.class
 .env
 .env.example
+.env.local
 .venv
 env/
 venv/
@@ -12,3 +13,15 @@ dist/
 *.egg-info/
 .pytest_cache/
 media/
+*.log
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.db
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

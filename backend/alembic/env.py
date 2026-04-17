@@ -7,14 +7,8 @@ from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 # Import all models so Alembic can detect them
-from app.models import Base
-from app.models.user import User
-from app.models.couple import Couple
-from app.models.media_item import MediaItem
-from app.models.music_track import MusicTrack
-from app.models.special_date import SpecialDate
-from app.models.quote import Quote
-from app.models.refresh_token import RefreshToken
+from app.database import Base
+import app.models  # noqa: F401 to ensure all models are imported and registered with Base
 
 # This is the Alembic Config object
 config = context.config

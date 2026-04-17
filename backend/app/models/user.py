@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
 from sqlalchemy import Boolean, Enum, String, func, text
 from sqlalchemy.dialects.postgresql import UUID
@@ -7,6 +7,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
+if TYPE_CHECKING:
+    from app.models.media_item import MediaItem
+    from app.models.music_track import MusicTrack
+    from app.models.quote import Quote
+    from app.models.special_date import SpecialDate
+    from app.models.couple import Couple
+    from app.models.refresh_token import RefreshToken
 
 class User(Base):
     __tablename__ = "users"

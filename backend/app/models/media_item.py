@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from uuid import uuid4
 
 from sqlalchemy import String, Text, Enum, BigInteger, DateTime, ForeignKey, func, text
@@ -7,8 +7,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database import Base
-from app.models.user import User
-from app.models.couple import Couple
+
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.couple import Couple
 
 class MediaItem(Base):
     __tablename__ = "media_items"

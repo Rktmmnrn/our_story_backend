@@ -1,12 +1,14 @@
 from datetime import datetime, date
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from uuid import uuid4
 
 from sqlalchemy import String, Text, Date, DateTime, ForeignKey, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.models.couple import Couple
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.couple import Couple
+    from app.models.user import User
 
 from app.database import Base
 

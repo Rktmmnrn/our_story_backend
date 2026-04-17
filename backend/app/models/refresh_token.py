@@ -1,12 +1,15 @@
 from datetime import datetime
 from uuid import uuid4
+from typing import TYPE_CHECKING
 
 from sqlalchemy import String, Boolean, DateTime, ForeignKey, func, text, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database import Base
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
