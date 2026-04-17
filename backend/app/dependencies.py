@@ -1,113 +1,91 @@
-# app/dependencies.py
+"""
+FastAPI dependency injection.
+All reusable dependencies: DB session, current user, couple guard, admin guard.
+"""
+from typing import AsyncGenerator
+from uuid import UUID
+
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import Optional
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.session import get_db
-from backend.app.models.user import User, UserRole
-from backend.app.core.security import decode_token
+from app.database import AsyncSessionLocal
+from app.utils.auth import decode_access_token
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/auth/login",
-    auto_error=False
-)
+
+bearer_scheme = HTTPBearer()
+
+
+# ── Database ──────────────────────────────────────────────────────────────────
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
 
 async def get_current_user(
-    token: Optional[str] = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db)
-) -> Optional[User]:
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: AsyncSession = Depends(get_db),
+):
     """
-    Récupère l'utilisateur courant à partir du JWT token.
+    Validates JWT access token, returns the User model instance.
+    Import User model inside function to avoid circular imports.
     """
-    if not token:
-        return None
-    
+    from app.crud.user import crud_user  # noqa: avoid circular
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token invalide ou expiré",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        payload = decode_token(token)
-        if not payload:
-            return None
-        
+        payload = decode_access_token(credentials.credentials)
         user_id: str = payload.get("sub")
         if not user_id:
-            return None
-        
-        # Vérifier le type de token
-        if payload.get("type") != "access":
-            return None
-        
-        # Récupérer l'utilisateur
-        user_query = await db.execute(
-            select(User).where(User.id == int(user_id))
-        )
-        user = user_query.scalar_one_or_none()
-        
-        return user
-        
-    except (JWTError, ValueError):
-        return None
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
 
-async def get_current_active_user(
-    current_user: Optional[User] = Depends(get_current_user)
-) -> User:
-    """
-    Vérifie que l'utilisateur est authentifié et actif.
-    """
-    if not current_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Non authentifié",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Compte désactivé"
-        )
-    
-    if not current_user.is_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email non vérifié"
-        )
-    
-    return current_user
+    user = await crud_user.get_by_id(db, UUID(user_id))
+    if user is None or not user.is_active:
+        raise credentials_exception
+    return user
 
-async def get_current_verified_user(
-    current_user: User = Depends(get_current_active_user)
-) -> User:
-    """
-    Vérifie que l'utilisateur a vérifié son email.
-    """
-    if not current_user.is_verified:
+
+async def require_admin(current_user=Depends(get_current_user)):
+    """Requires the current user to have the admin role."""
+    if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email non vérifié"
+            detail="Accès réservé aux administrateurs",
         )
     return current_user
 
-async def require_admin(
-    current_user: User = Depends(get_current_active_user)
-) -> User:
+
+async def get_current_couple(
+    current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """
-    Vérifie que l'utilisateur a le rôle admin.
+    Returns the active Couple of the current user.
+    Raises 403 if user has no active couple.
     """
-    if current_user.role != UserRole.ADMIN:
+    from app.crud.couple import crud_couple  # noqa: avoid circular
+
+    couple = await crud_couple.get_active_by_user_id(db, current_user.id)
+    if couple is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Accès administrateur requis"
+            detail="Vous n'appartenez à aucun couple actif",
         )
-    return current_user
-
-# Dépendance optionnelle pour les endpoints publics/privés
-async def get_optional_user(
-    current_user: Optional[User] = Depends(get_current_user)
-) -> Optional[User]:
-    """
-    Récupère l'utilisateur si authentifié, sinon None.
-    Utile pour les endpoints qui fonctionnent avec ou sans authentification.
-    """
-    return current_user
+    return couple
