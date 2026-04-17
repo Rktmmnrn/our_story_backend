@@ -1,31 +1,20 @@
-from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, Mapped
-from sqlalchemy import func
-from datetime import datetime
-from typing import Optional
+# Import Base from database — single source of truth
+# Do NOT redefine Base here, it lives in app.database
+from app.database import Base  # noqa: F401
 
-class Base(AsyncAttrs, DeclarativeBase):
-    """Base class for all database models."""
-    
-    __abstract__ = True
-    
-    def __repr__(self) -> str:
-        """Simple repr for debugging."""
-        return f"<{self.__class__.__name__}>"
-
-# Import all models so Alembic can detect them
-from app.models.user import User
-from app.models.couple import Couple
-from app.models.media_item import MediaItem
-from app.models.music_track import MusicTrack
-from app.models.special_date import SpecialDate
-from app.models.quote import Quote
-from app.models.refresh_token import RefreshToken
+# Import all models so Alembic detects them via Base.metadata
+from app.models.user import User  # noqa: F401
+from app.models.couple import Couple  # noqa: F401
+from app.models.media_item import MediaItem  # noqa: F401
+from app.models.music_track import MusicTrack  # noqa: F401
+from app.models.special_date import SpecialDate  # noqa: F401
+from app.models.quote import Quote  # noqa: F401
+from app.models.refresh_token import RefreshToken  # noqa: F401
 
 __all__ = [
     "Base",
     "User",
-    "Couple", 
+    "Couple",
     "MediaItem",
     "MusicTrack",
     "SpecialDate",

@@ -5,10 +5,10 @@ from uuid import uuid4
 from sqlalchemy import String, Text, Boolean, DateTime, ForeignKey, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from backend.app.models.couple import Couple
-from backend.app.models.user import User
+from app.models.couple import Couple
+from app.models.user import User
 
-from app.models import Base
+from app.database import Base
 
 class Quote(Base):
     __tablename__ = "quotes"

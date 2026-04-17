@@ -1,18 +1,18 @@
 from datetime import datetime, date
-from typing import Optional, List
+from typing import TYPE_CHECKING, Optional, List
 from uuid import uuid4
 
 from sqlalchemy import String, Boolean, Date, DateTime, ForeignKey, CheckConstraint, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.models import Base
-from backend.app.models.media_item import MediaItem
-from backend.app.models.music_track import MusicTrack
-from backend.app.models.quote import Quote
-from backend.app.models.special_date import SpecialDate
-from backend.app.models.user import User
+from app.database import Base
 
-from app.models import Base
+if TYPE_CHECKING:
+    from app.models.media_item import MediaItem
+    from app.models.music_track import MusicTrack
+    from app.models.quote import Quote
+    from app.models.special_date import SpecialDate
+    from app.models.user import User
 
 class Couple(Base):
     __tablename__ = "couples"

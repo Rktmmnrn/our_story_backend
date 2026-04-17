@@ -6,9 +6,9 @@ from sqlalchemy import String, Text, Enum, BigInteger, DateTime, ForeignKey, fun
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.models import Base
-from backend.app.models.user import User
-from backend.app.models.couple import Couple
+from app.database import Base
+from app.models.user import User
+from app.models.couple import Couple
 
 class MediaItem(Base):
     __tablename__ = "media_items"

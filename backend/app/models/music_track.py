@@ -6,9 +6,9 @@ from sqlalchemy import String, Boolean, Integer, DateTime, ForeignKey, func, tex
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.models import Base
-from backend.app.models.couple import Couple
-from backend.app.models.user import User
+from app.database import Base
+from app.models.couple import Couple
+from app.models.user import User
 
 class MusicTrack(Base):
     __tablename__ = "music_tracks"
