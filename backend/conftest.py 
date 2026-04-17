@@ -1,0 +1,5 @@
+import sys
+import os
+
+# Assure que /app est dans le path Python pour que "from app.xxx" fonctionne
+sys.path.insert(0, os.path.dirname(__file__))
