@@ -79,3 +79,6 @@ class CRUDRefreshToken:
 
         await db.commit()
         return count
+
+
+crud_refresh_token = CRUDRefreshToken()

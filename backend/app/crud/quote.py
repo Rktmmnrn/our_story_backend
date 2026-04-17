@@ -54,7 +54,7 @@ class CRUDQuote:
         """Create a new quote."""
         quote = Quote(
             couple_id=couple_id,
-            created_by_id=created_by,
+            created_by=created_by,
             text=obj_in.text,
             author=obj_in.author,
         )
@@ -79,3 +79,6 @@ class CRUDQuote:
         """Delete a quote."""
         await db.delete(quote)
         await db.commit()
+
+
+crud_quote = CRUDQuote()

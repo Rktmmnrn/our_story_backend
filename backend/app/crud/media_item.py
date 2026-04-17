@@ -73,7 +73,7 @@ class CRUDMediaItem:
         """Create a new media item."""
         media_item = MediaItem(
             couple_id=couple_id,
-            uploaded_by_id=uploaded_by,
+            uploaded_by=uploaded_by,
             media_type=media_type,
             file_path=file_path,
             original_filename=original_filename,
@@ -106,3 +106,6 @@ class CRUDMediaItem:
         await db.delete(item)
         await db.commit()
         return file_path
+
+
+crud_media_item = CRUDMediaItem()

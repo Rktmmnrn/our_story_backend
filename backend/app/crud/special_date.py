@@ -52,7 +52,7 @@ class CRUDSpecialDate:
         """Create a new special date."""
         special_date = SpecialDate(
             couple_id=couple_id,
-            created_by_id=created_by,
+            created_by=created_by,
             title=obj_in.title,
             event_date=obj_in.event_date,
             description=obj_in.description,
@@ -79,3 +79,6 @@ class CRUDSpecialDate:
         """Delete a special date."""
         await db.delete(special_date)
         await db.commit()
+
+
+crud_special_date = CRUDSpecialDate()

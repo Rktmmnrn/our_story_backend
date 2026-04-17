@@ -29,7 +29,7 @@ class CRUDUser:
         """Create a new user."""
         user = User(
             email=obj_in.email,
-            hashed_password=hashed_password,
+            password_hash=hashed_password,
             display_name=obj_in.display_name,
         )
         db.add(user)
@@ -76,3 +76,6 @@ class CRUDUser:
         """Delete a user."""
         await db.delete(user)
         await db.commit()
+
+
+crud_user = CRUDUser()

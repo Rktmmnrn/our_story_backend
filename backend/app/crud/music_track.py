@@ -53,7 +53,7 @@ class CRUDMusicTrack:
         """Create a new music track."""
         track = MusicTrack(
             couple_id=couple_id,
-            uploaded_by_id=uploaded_by,
+            uploaded_by=uploaded_by,
             file_path=file_path,
             title=obj_in.title,
             artist=obj_in.artist,
@@ -81,3 +81,6 @@ class CRUDMusicTrack:
         await db.delete(track)
         await db.commit()
         return file_path
+
+
+crud_music_track = CRUDMusicTrack()

@@ -84,7 +84,7 @@ class CRUDCouple:
     ) -> Couple:
         """Set invite token for couple."""
         couple.invite_token = token
-        couple.invite_expires_at = expires_at
+        couple.invite_token_expires_at = expires_at
         await db.commit()
         await db.refresh(couple, ["user1", "user2"])
         return couple
@@ -95,7 +95,7 @@ class CRUDCouple:
         """Join a user to a couple."""
         couple.user2_id = user2_id
         couple.invite_token = None
-        couple.invite_expires_at = None
+        couple.invite_token_expires_at = None
         await db.commit()
         await db.refresh(couple, ["user1", "user2"])
         return couple
@@ -124,3 +124,6 @@ class CRUDCouple:
         """Count total couples."""
         result = await db.execute(select(func.count(Couple.id)))
         return result.scalar_one()
+
+
+crud_couple = CRUDCouple()
