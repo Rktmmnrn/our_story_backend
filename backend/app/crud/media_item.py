@@ -21,7 +21,7 @@ class CRUDMediaItem:
         result = await db.execute(
             select(MediaItem)
             .where(MediaItem.id == item_id)
-            .options(selectinload(MediaItem.uploaded_by))
+            .options(selectinload(MediaItem.uploader))
         )
         return result.scalar_one_or_none()
 
@@ -35,7 +35,7 @@ class CRUDMediaItem:
             .offset(skip)
             .limit(limit)
             .order_by(MediaItem.created_at.desc())
-            .options(selectinload(MediaItem.uploaded_by))
+            .options(selectinload(MediaItem.uploader))
         )
         return list(result.scalars().all())
 
@@ -57,6 +57,19 @@ class CRUDMediaItem:
             select(func.count(MediaItem.id)).where(MediaItem.media_type == media_type)
         )
         return result.scalar_one()
+
+    async def list_all(
+        self, db: AsyncSession, skip: int = 0, limit: int = 50
+    ) -> list[MediaItem]:
+        """List all media items with pagination."""
+        result = await db.execute(
+            select(MediaItem)
+            .offset(skip)
+            .limit(limit)
+            .order_by(MediaItem.created_at.desc())
+            .options(selectinload(MediaItem.uploader))
+        )
+        return list(result.scalars().all())
 
     async def create(
         self,

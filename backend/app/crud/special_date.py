@@ -21,7 +21,7 @@ class CRUDSpecialDate:
         result = await db.execute(
             select(SpecialDate)
             .where(SpecialDate.id == date_id)
-            .options(selectinload(SpecialDate.created_by))
+            .options(selectinload(SpecialDate.creator))
         )
         return result.scalar_one_or_none()
 
@@ -33,7 +33,7 @@ class CRUDSpecialDate:
             select(SpecialDate)
             .where(SpecialDate.couple_id == couple_id)
             .order_by(SpecialDate.event_date.asc())
-            .options(selectinload(SpecialDate.created_by))
+            .options(selectinload(SpecialDate.creator))
         )
         return list(result.scalars().all())
 

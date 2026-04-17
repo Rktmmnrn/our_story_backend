@@ -125,5 +125,12 @@ class CRUDCouple:
         result = await db.execute(select(func.count(Couple.id)))
         return result.scalar_one()
 
+    async def count_active(self, db: AsyncSession) -> int:
+        """Count active couples."""
+        result = await db.execute(
+            select(func.count(Couple.id)).where(Couple.is_active == True)
+        )
+        return result.scalar_one()
+
 
 crud_couple = CRUDCouple()

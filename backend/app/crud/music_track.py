@@ -21,7 +21,7 @@ class CRUDMusicTrack:
         result = await db.execute(
             select(MusicTrack)
             .where(MusicTrack.id == track_id)
-            .options(selectinload(MusicTrack.uploaded_by))
+            .options(selectinload(MusicTrack.uploader))
         )
         return result.scalar_one_or_none()
 
@@ -33,7 +33,7 @@ class CRUDMusicTrack:
             select(MusicTrack)
             .where(MusicTrack.couple_id == couple_id)
             .order_by(MusicTrack.created_at.desc())
-            .options(selectinload(MusicTrack.uploaded_by))
+            .options(selectinload(MusicTrack.uploader))
         )
         return list(result.scalars().all())
 

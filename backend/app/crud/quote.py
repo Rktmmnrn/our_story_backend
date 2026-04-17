@@ -19,7 +19,7 @@ class CRUDQuote:
         result = await db.execute(
             select(Quote)
             .where(Quote.id == quote_id)
-            .options(selectinload(Quote.created_by))
+            .options(selectinload(Quote.creator))
         )
         return result.scalar_one_or_none()
 
@@ -33,7 +33,7 @@ class CRUDQuote:
             query = query.where(Quote.is_favorite == True)
 
         query = query.order_by(Quote.created_at.desc()).options(
-            selectinload(Quote.created_by)
+            selectinload(Quote.creator)
         )
 
         result = await db.execute(query)

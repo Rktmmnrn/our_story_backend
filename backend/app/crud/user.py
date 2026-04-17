@@ -72,6 +72,20 @@ class CRUDUser:
         result = await db.execute(select(func.count(User.id)))
         return result.scalar_one()
 
+    async def count_active(self, db: AsyncSession) -> int:
+        """Count active users."""
+        result = await db.execute(
+            select(func.count(User.id)).where(User.is_active == True)
+        )
+        return result.scalar_one()
+
+    async def list_recent(self, db: AsyncSession, limit: int = 5) -> list[User]:
+        """List recent users."""
+        result = await db.execute(
+            select(User).order_by(User.created_at.desc()).limit(limit)
+        )
+        return list(result.scalars().all())
+
     async def delete(self, db: AsyncSession, user: User) -> None:
         """Delete a user."""
         await db.delete(user)
