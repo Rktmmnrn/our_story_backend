@@ -34,9 +34,9 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: https://notre-histoire.vercel.app
+        value: https://our-story-gray.vercel.app/
       - key: FRONTEND_BASE_URL
-        value: https://notre-histoire.vercel.app
+        value: https://our-story-gray.vercel.app/
       - key: FIRST_ADMIN_EMAIL
         sync: false
       - key: FIRST_ADMIN_PASSWORD
