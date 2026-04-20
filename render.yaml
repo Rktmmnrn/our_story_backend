@@ -66,4 +66,4 @@ databases:
   - name: notre-histoire-db
     plan: free
     databaseName: notre_histoire
-    user: userNH
+    user: usernh
