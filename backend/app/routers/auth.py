@@ -1,7 +1,7 @@
 """
 Auth router: /api/v1/auth
 """
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_current_user, get_db
@@ -13,9 +13,9 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(
-    email: str,
-    password: str,
-    display_name: str,
+    email: str = Form(...),
+    password: str = Form(...),
+    display_name: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
     user = await auth_service.register_user(db, email, password, display_name)
@@ -32,8 +32,8 @@ async def register(
 
 @router.post("/login")
 async def login(
-    email: str,
-    password: str,
+    email: str = Form(...),
+    password: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
     tokens = await auth_service.login_user(db, email, password)
@@ -42,7 +42,7 @@ async def login(
 
 @router.post("/refresh")
 async def refresh(
-    refresh_token: str,
+    refresh_token: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
     tokens = await auth_service.refresh_tokens(db, refresh_token)
@@ -51,7 +51,7 @@ async def refresh(
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(
-    refresh_token: str,
+    refresh_token: str = Form(...),
     db: AsyncSession = Depends(get_db),
     _=Depends(get_current_user),
 ):
@@ -76,7 +76,7 @@ async def get_me(current_user=Depends(get_current_user)):
 
 @router.patch("/me")
 async def update_me(
-    display_name: str | None = None,
+    display_name: str | None = Form(None),
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
