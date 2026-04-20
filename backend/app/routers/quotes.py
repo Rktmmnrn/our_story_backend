@@ -76,9 +76,27 @@ async def update_quote(
     if not q or q.couple_id != couple.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Citation introuvable")
 
-    obj_in = QuoteUpdate(text=text, author=author, is_favorite=is_favorite)
-    updated = await crud_quote.update(db, q, obj_in)
-    return {"data": {"id": str(updated.id), "is_favorite": updated.is_favorite}, "message": "Citation mise à jour"}
+    if text is not None:
+        if not text.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="La citation ne peut pas être vide",
+            )
+        q.text = text
+ 
+    if author is not None:
+        q.author = author
+ 
+    if is_favorite is not None:
+        q.is_favorite = is_favorite
+ 
+    await db.commit()
+    await db.refresh(q)
+ 
+    return {
+        "data": {"id": str(q.id), "is_favorite": q.is_favorite},
+        "message": "Citation mise à jour",
+    }
 
 
 @router.delete("/{quote_id}", status_code=status.HTTP_204_NO_CONTENT)

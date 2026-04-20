@@ -1,6 +1,8 @@
 """
 Media router: /api/v1/media
 """
+import mimetypes
+from pathlib import Path
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
@@ -12,6 +14,36 @@ from app.services import media_service
 
 router = APIRouter(prefix="/media", tags=["Médias"])
 
+@router.get("/file/{folder}/{filename}")
+async def serve_file_by_path(
+    folder: str,
+    filename: str,
+    current_user=Depends(get_current_user),
+):
+    """
+    Serve a static file by folder/filename.
+    Used primarily for user avatars uploaded via /auth/me/avatar.
+    """
+    from app.config import settings
+ 
+    # Security: block path traversal
+    if ".." in folder or ".." in filename or "/" in filename:
+        raise HTTPException(status_code=400, detail="Chemin invalide")
+ 
+    allowed_folders = {"photos", "videos", "music"}
+    if folder not in allowed_folders:
+        raise HTTPException(status_code=400, detail="Dossier non autorisé")
+ 
+    abs_path = Path(settings.MEDIA_ROOT) / folder / filename
+    if not abs_path.exists():
+        raise HTTPException(status_code=404, detail="Fichier introuvable")
+ 
+    mime_type, _ = mimetypes.guess_type(str(abs_path))
+    return FileResponse(
+        path=str(abs_path),
+        media_type=mime_type or "application/octet-stream",
+        filename=filename,
+    )
 
 @router.get("/")
 async def list_media(
