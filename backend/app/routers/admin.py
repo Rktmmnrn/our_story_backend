@@ -105,7 +105,8 @@ async def update_user(
     if role is not None:
         user.role = role
 
-    await db.flush()
+    await db.commit()
+    await db.refresh(user)
     return {"data": {"id": str(user.id), "is_active": user.is_active, "role": user.role}, "message": "Utilisateur mis à jour"}
 
 

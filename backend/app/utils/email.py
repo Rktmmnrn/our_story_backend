@@ -74,6 +74,16 @@ async def send_invite_email(
     Sends a couple invitation email.
     Returns True on success, False on failure (non-blocking).
     """
+
+    if not settings.smtp_configured:
+        logger.warning(
+            "SMTP non configuré — email d'invitation non envoyé à %s. "
+            "Lien d'invitation : %s",
+            recipient_email,
+            invite_link,
+        )
+        return False
+
     msg = MIMEMultipart("alternative")
     msg["Subject"] = f"{inviter_name} vous invite sur Notre Histoire ♡"
     msg["From"] = settings.SMTP_FROM
@@ -98,8 +108,8 @@ async def send_invite_email(
             password=settings.SMTP_PASSWORD,
             start_tls=True,
         )
-        logger.info(f"Invitation email sent to {recipient_email}")
+        logger.info(f"Email d'invitation envoyer à %s", {recipient_email})
         return True
     except Exception as exc:
-        logger.error(f"Failed to send invitation email to {recipient_email}: {exc}")
+        logger.error("Échec envoi email à %s : %s", recipient_email, exc)
         return False
