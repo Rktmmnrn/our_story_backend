@@ -76,7 +76,7 @@ async def get_me(current_user=Depends(get_current_user)):
 
 @router.patch("/me")
 async def update_me(
-    display_name: str | None = Form(None),
+    display_name: str | None = None,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
