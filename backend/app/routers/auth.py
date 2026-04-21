@@ -1,10 +1,11 @@
 """
 Auth router: /api/v1/auth
 """
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_current_user, get_db
+from app.schemas.auth import LoginRequest, RegisterRequest
 from app.services import auth_service
 from app.utils.file_manager import InvalidMimeType, save_upload, validate_photo
 
@@ -13,12 +14,12 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(
-    email: str = Form(...),
-    password: str = Form(...),
-    display_name: str = Form(...),
+    request: RegisterRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    user = await auth_service.register_user(db, email, password, display_name)
+    user = await auth_service.register_user(
+        db, request.email, request.password, request.display_name
+    )
     return {
         "data": {
             "id": str(user.id),
@@ -32,11 +33,10 @@ async def register(
 
 @router.post("/login")
 async def login(
-    email: str = Form(...),
-    password: str = Form(...),
+    request: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    tokens = await auth_service.login_user(db, email, password)
+    tokens = await auth_service.login_user(db, request.email, request.password)
     return {"data": tokens, "message": "Connexion réussie"}
 
 
