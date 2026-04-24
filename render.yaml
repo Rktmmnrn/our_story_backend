@@ -29,9 +29,9 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: https://our-story-gray.vercel.app/
+        value: https://our-story-gray.vercel.app,http://localhost:5173
       - key: FRONTEND_BASE_URL
-        value: https://our-story-gray.vercel.app/
+        value: https://our-story-gray.vercel.app,http://localhost:5173
       - key: FIRST_ADMIN_EMAIL
         sync: false
       - key: FIRST_ADMIN_PASSWORD
