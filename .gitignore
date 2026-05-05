@@ -58,3 +58,5 @@ media/
 
 # OS
 Thumbs.db
+
+fly.toml
